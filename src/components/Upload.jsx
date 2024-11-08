@@ -3,6 +3,7 @@ import { Alert } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconFileText, IconUpload, IconX } from "@tabler/icons-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const PDFUploader = () => {
   const [files, setFiles] = useState([]);
@@ -12,9 +13,11 @@ const PDFUploader = () => {
   const [formData, setFormData] = useState({
     title: "",
     composer: "",
-    description: "",
+    lyrics: "",
     file: null,
   });
+
+  const navigate = useNavigate();
 
   const handleFileChange = (event) => {
     const { name, value } = event.target;
@@ -58,10 +61,10 @@ const PDFUploader = () => {
       const formPayload = new FormData();
       formPayload.append("title", formData.title);
       formPayload.append("composer", formData.composer);
-      formPayload.append("description", formData.description);
+      formPayload.append("lyrics", formData.lyrics);
       formPayload.append("pdf_file", files[0]); // Only the first file is uploaded
 
-      const response = await fetch("http://127.0.0.1:8000/api/upload/", {
+      const response = await fetch("https://nota-db.onrender.com/api/upload/", {
         method: "POST",
         body: formPayload,
         // Do not set the Content-Type header manually; fetch will handle it
@@ -76,7 +79,7 @@ const PDFUploader = () => {
       setFormData({
         title: "",
         composer: "",
-        description: "",
+        lyrics: "",
         file: null,
       });
       setFiles([]);
@@ -88,6 +91,7 @@ const PDFUploader = () => {
         position: "top-center",
       });
       setUploading(false);
+      navigate("/");
     } catch (error) {
       console.error("Error uploading file:", error);
       setError(error.message);
@@ -132,10 +136,10 @@ const PDFUploader = () => {
 
           <div>
             <textarea
-              name="description"
-              value={formData.description}
+              name="lyrics"
+              value={formData.lyrics}
               onChange={handleFileChange}
-              placeholder="Description"
+              placeholder="Lyrics?"
               rows={3}
               className="w-full p-3 border rounded-md border-orange-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
             />

@@ -17,7 +17,7 @@ import {
   IconFileText,
   IconUpload,
 } from "@tabler/icons-react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 export function Layout({ children }) {
   const [opened, { toggle }] = useDisclosure();
@@ -52,13 +52,6 @@ export function Layout({ children }) {
     >
       <AppShell.Header className="border-b border-gray-200 bg-orange-50">
         <div className="flex items-center justify-between border h-full">
-          {/* <Burger
-            opened={opened}
-            onClick={toggle}
-            hiddenFrom="sm"
-            size="sm"
-            className="text-orange-600"
-          /> */}
           <div className="flex items-center justify-between w-full">
             <Group gap={rem(8)} className="flex items-center">
               <IconFileText
@@ -66,7 +59,9 @@ export function Layout({ children }) {
                 stroke={1.5}
                 className="text-orange-600"
               />
-              <p className="text-xl font-bold text-orange-600">Nota DB</p>
+              <Link to="/" className="text-xl font-bold text-orange-600">
+                Nota DB
+              </Link>
             </Group>
 
             <div className="flex items-center gap-2">

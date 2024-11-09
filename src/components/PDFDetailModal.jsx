@@ -32,8 +32,8 @@ const PDFDetailModal = ({ pdf, opened, close, onClickDownload }) => {
       withCloseButton={false}
     >
       <div className="flex flex-col gap-2">
-        <div className="flex gap-2 justify-between w-full ">
-          <h2 className="text-lg md:text-2xl font-bold text-gray-900">
+        <div className="flex gap-2 justify-between w-full items-center ">
+          <h2 className="sm:text-lg md:text-2xl font-bold text-gray-900">
             {toTitleCase(pdf.title)}
           </h2>
 
@@ -50,7 +50,10 @@ const PDFDetailModal = ({ pdf, opened, close, onClickDownload }) => {
               onClick={close}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors"
             >
-              <IconX size={20} className="text-gray-500 hover:scale-105 transition-all duration-300 ease-in-out" />
+              <IconX
+                size={20}
+                className="text-gray-500 hover:scale-105 transition-all duration-300 ease-in-out"
+              />
             </button>
           </div>
         </div>

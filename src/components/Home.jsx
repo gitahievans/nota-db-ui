@@ -1,6 +1,10 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import PDFCard from "./PDFCard";
 import { IconSearch } from "@tabler/icons-react";
+import { useMediaQuery } from "@mantine/hooks";
+import { useSnapshot } from "valtio";
+import { globalState } from "../state/state";
 
 const Home = () => {
   const [files, setFiles] = useState([]);
@@ -9,6 +13,8 @@ const Home = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredFiles, setFilteredFiles] = useState([]);
   const [sortBy, setSortBy] = useState("title-asc");
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
 
   useEffect(() => {
     const fetchFiles = async () => {
@@ -106,14 +112,14 @@ const Home = () => {
           <div className="relative flex-1">
             <IconSearch
               className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              size={20}
+              size={isMobile ? 16 : 20}
             />
             <input
               type="text"
               value={searchTerm}
               onChange={handleSearch}
-              placeholder="Search PDFs..."
-              className="pl-10 py-2 bg-orange-50 rounded-lg w-full border border-orange-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              placeholder="Search Scores..."
+              className="placeholder:text-gray-400 placeholder:text-xs pl-10 py-1.5 md:py-2 bg-orange-50 rounded-lg w-full border border-orange-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             />
           </div>
           <select

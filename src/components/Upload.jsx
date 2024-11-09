@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { Alert } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconFileText, IconUpload, IconX } from "@tabler/icons-react";
-import { useState } from "react";
+import { IconFileText, IconPlus, IconUpload, IconX } from "@tabler/icons-react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const PDFUploader = () => {
@@ -10,14 +10,40 @@ const PDFUploader = () => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [newCategory, setNewCategory] = useState("");
+  const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     composer: "",
     lyrics: "",
     file: null,
+    categories: [],
+    year: null
   });
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(
+          "https://nota-db.onrender.com/api/categories/"
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch categories");
+        }
+        const data = await response.json();
+        console.log("data", data);
+
+        setCategories(data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleFileChange = (event) => {
     const { name, value } = event.target;
@@ -62,12 +88,17 @@ const PDFUploader = () => {
       formPayload.append("title", formData.title);
       formPayload.append("composer", formData.composer);
       formPayload.append("lyrics", formData.lyrics);
-      formPayload.append("pdf_file", files[0]); // Only the first file is uploaded
+      formPayload.append("pdf_file", files[0]);
+      formPayload.append("year", +formData.year);
+
+      formPayload.append(
+        "categories",
+        JSON.stringify(formData.categories.map((name) => ({ name })))
+      );
 
       const response = await fetch("https://nota-db.onrender.com/api/upload/", {
         method: "POST",
         body: formPayload,
-        // Do not set the Content-Type header manually; fetch will handle it
       });
 
       if (!response.ok) {
@@ -81,6 +112,8 @@ const PDFUploader = () => {
         composer: "",
         lyrics: "",
         file: null,
+        categories: [],
+        year: null
       });
       setFiles([]);
       notifications.show({
@@ -100,30 +133,59 @@ const PDFUploader = () => {
     }
   };
 
+  const handleCategoryChange = (categoryName) => {
+    setFormData((prev) => {
+      const updatedCategories = prev.categories.includes(categoryName)
+        ? prev.categories.filter((cat) => cat !== categoryName)
+        : [...prev.categories, categoryName];
+      return { ...prev, categories: updatedCategories };
+    });
+  };
+
+  const handleNewCategorySubmit = () => {
+    if (newCategory.trim()) {
+      setFormData((prev) => ({
+        ...prev,
+        categories: [...prev.categories, newCategory.trim()],
+      }));
+      setNewCategory("");
+      setShowNewCategoryInput(false);
+    }
+  };
+
+  const years = Array.from(
+    { length: new Date().getFullYear() - 1900 + 1 },
+    (_, index) => 1900 + index
+  );
+
   return (
     <div className="max-w-3xl mx-auto p-6">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-orange-600 mb-2">
-          Upload New PDF
+          Upload New Music Score
         </h1>
-        <h4 className="text-gray-600">Add a new PDF to your library</h4>
+        <h4 className="text-gray-600">Add a new score to the library</h4>
       </div>
 
       <form onSubmit={handleUpload} className="space-y-6">
-        <div className="space-y-4">
-          <div>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleFileChange}
-              placeholder="Title"
-              className="w-full p-3 border rounded-md border-orange-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
-              required
-            />
-          </div>
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-gray-700">
+            Title
+          </label>
+          <input
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleFileChange}
+            placeholder="Title"
+            className="w-full p-3 border rounded-md border-orange-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+            required
+          />
 
-          <div>
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700">
+              Composer
+            </label>
             <input
               type="text"
               name="composer"
@@ -134,7 +196,29 @@ const PDFUploader = () => {
             />
           </div>
 
-          <div>
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700">
+              Year Composed
+            </label>
+            <select
+              name="year"
+              value={formData.year}
+              onChange={handleFileChange}
+              className="w-full p-3 bg-white border rounded-md border-orange-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+            >
+              <option value="">Select Year</option>
+              {years.reverse().map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700">
+              Lyrics?
+            </label>
             <textarea
               name="lyrics"
               value={formData.lyrics}
@@ -190,6 +274,81 @@ const PDFUploader = () => {
               </div>
             </div>
           </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700">
+              Categoriesof the Piece
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  type="button"
+                  onClick={() => handleCategoryChange(category.name)}
+                  className={`px-3 py-1 rounded-full text-sm 
+                  ${
+                    formData.categories.includes(category.name)
+                      ? "bg-orange-500 text-white"
+                      : "bg-orange-100 text-orange-700"
+                  }
+                  hover:bg-orange-400 hover:text-white transition-colors`}
+                >
+                  {category.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {showNewCategoryInput ? (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                placeholder="Enter new category"
+                className="flex-1 p-2 border rounded-md border-orange-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={handleNewCategorySubmit}
+                className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+              >
+                Add
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setShowNewCategoryInput(true)}
+              className="flex items-center gap-2 text-orange-600 hover:text-orange-700"
+            >
+              <IconPlus size={16} />
+              <span>Add New Category</span>
+            </button>
+          )}
+
+          {formData.categories.length > 0 && (
+            <div className="mt-2">
+              <p className="text-sm text-gray-600 mb-2">Selected categories:</p>
+              <div className="flex flex-wrap gap-2">
+                {formData.categories.map((cat) => (
+                  <span
+                    key={cat}
+                    className="inline-flex items-center gap-1 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm"
+                  >
+                    {cat}
+                    <button
+                      type="button"
+                      onClick={() => handleCategoryChange(cat)}
+                      className="text-orange-500 hover:text-orange-700"
+                    >
+                      <IconX size={14} />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           {files.length > 0 && (
             <div className="space-y-2">

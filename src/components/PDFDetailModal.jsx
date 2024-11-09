@@ -11,9 +11,11 @@ import {
   IconEdit,
 } from "@tabler/icons-react";
 import UpdateForm from "./UpdateForm";
+import { useMediaQuery } from "@mantine/hooks";
 
 const PDFDetailModal = ({ pdf, opened, close, onClickDownload }) => {
   const [isEditing, setIsEditing] = React.useState(false);
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   const toTitleCase = (str) => {
     return str.replace(
@@ -27,7 +29,7 @@ const PDFDetailModal = ({ pdf, opened, close, onClickDownload }) => {
       opened={opened}
       onClose={close}
       size="lg"
-      padding="xl"
+      padding={isMobile ? "xs" : "xl"}
       centered
       withCloseButton={false}
     >

@@ -53,12 +53,8 @@ export function Layout({ children }) {
       <AppShell.Header className="border-b border-gray-200 bg-orange-50">
         <div className="flex items-center justify-between border h-full">
           <div className="flex items-center justify-between w-full">
-            <Group gap={rem(8)} className="flex items-center">
-              <IconFileText
-                size={30}
-                stroke={1.5}
-                className="text-orange-600"
-              />
+            <Group gap={rem(8)} className="flex items-center pl-2">
+              <img src="/icon.png" alt="Logo" className="text-orange-600" />
               <Link to="/" className="text-xl font-bold text-orange-600">
                 Nota DB
               </Link>

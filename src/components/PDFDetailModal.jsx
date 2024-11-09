@@ -31,22 +31,28 @@ const PDFDetailModal = ({ pdf, opened, close, onClickDownload }) => {
       centered
       withCloseButton={false}
     >
-      <div className="relative">
-        <div className="absolute right-0 top-0 flex gap-2">
-          {!isEditing && (
+      <div className="flex flex-col gap-2">
+        <div className="flex gap-2 justify-between w-full ">
+          <h2 className="text-lg md:text-2xl font-bold text-gray-900">
+            {toTitleCase(pdf.title)}
+          </h2>
+
+          <div className="flex items-center gap-2">
+            {!isEditing && (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="rounded-full p-2 hover:bg-orange-100 hover:scale-105 transition-all duration-300 ease-in-out"
+              >
+                <IconEdit size={20} className="text-orange-500" />
+              </button>
+            )}
             <button
-              onClick={() => setIsEditing(true)}
-              className="p-2 hover:bg-orange-100 rounded-full transition-colors"
+              onClick={close}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
             >
-              <IconEdit size={20} className="text-orange-500" />
+              <IconX size={20} className="text-gray-500 hover:scale-105 transition-all duration-300 ease-in-out" />
             </button>
-          )}
-          <button
-            onClick={close}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <IconX size={20} className="text-gray-500" />
-          </button>
+          </div>
         </div>
 
         <div className="space-y-6 pt-2">
@@ -58,10 +64,6 @@ const PDFDetailModal = ({ pdf, opened, close, onClickDownload }) => {
             />
           ) : (
             <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-gray-900">
-                {toTitleCase(pdf.title)}
-              </h2>
-
               <div className="flex md:items-center flex-col md:flex-row md:flex-wrap gap-2">
                 <div className="flex items-center space-x-2">
                   <div className="flex items-center gap-1.5">

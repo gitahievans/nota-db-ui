@@ -19,7 +19,7 @@ const PDFUploader = () => {
     lyrics: "",
     file: null,
     categories: [],
-    year: null
+    year: null,
   });
 
   const navigate = useNavigate();
@@ -113,7 +113,7 @@ const PDFUploader = () => {
         lyrics: "",
         file: null,
         categories: [],
-        year: null
+        year: null,
       });
       setFiles([]);
       notifications.show({
@@ -275,6 +275,29 @@ const PDFUploader = () => {
             </div>
           </div>
 
+          {files.length > 0 && (
+            <div className="space-y-2">
+              {files.map((file, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-3 bg-orange-50 rounded-md"
+                >
+                  <span className="text-sm text-gray-600">{file.name}</span>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFiles(files.filter((_, i) => i !== index));
+                    }}
+                    className="text-gray-500 hover:text-red-500"
+                  >
+                    <IconX size={20} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="space-y-2">
             <label className="block text-sm font-semibold text-gray-700">
               Categoriesof the Piece
@@ -347,29 +370,6 @@ const PDFUploader = () => {
                   </span>
                 ))}
               </div>
-            </div>
-          )}
-
-          {files.length > 0 && (
-            <div className="space-y-2">
-              {files.map((file, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-3 bg-orange-50 rounded-md"
-                >
-                  <span className="text-sm text-gray-600">{file.name}</span>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setFiles(files.filter((_, i) => i !== index));
-                    }}
-                    className="text-gray-500 hover:text-red-500"
-                  >
-                    <IconX size={20} />
-                  </button>
-                </div>
-              ))}
             </div>
           )}
 
